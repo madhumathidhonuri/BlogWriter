@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color:cadetblue;
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            background-color: #880d5d;
+            padding: 20px 20px;
+        }
+        nav a {
+            color:pink;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color:gold;
+        }
+        .post {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .post h3 {
+            color: #333;
+        }
+        .post p {
+            color: #555;
+        }
+        .post a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .post a:hover {
+            text-decoration: underline;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .search-bar input {
+            padding: 10px;
+            width: 70%;
+            font-size: 16px;
+        }
+        .search-bar button {
+            padding: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .search-bar button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'blog' %}">Home</a>
+        <a href="{% url 'profile' %}">Profile</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </nav>
+
+    <div class="container">
+        <h1>Welcome to the Blog!</h1>
+        <div class="search-bar">
+            <form method="GET" action="{% url 'blog' %}">
+                <input type="text" name="q" placeholder="Search blog posts..." value="{{ request.GET.q }}">
+                <button type="submit">Search</button>
+            </form>
+        </div>
+        <div class="text-end">
+            <a href="{% url 'write_blog' %}" class="btn">Write a Blog</a>
+        </div>
+        {% for post in posts %}
+        <div class="post">
+            <h3>{{ post.title }}</h3>
+            <p>{{ post.content|truncatewords:30 }}</p>
+            <a href="{% url 'post_detail' post.id %}" class="btn btn-primary">Read More</a>
+        </div>
+        {% empty %}
+        <p>No posts available.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

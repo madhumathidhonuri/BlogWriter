@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Writer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color:rgb(43, 3, 49);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            margin-top: 10%;
+        }
+        h1 {
+            font-size: 3rem;
+            color:rgb(235, 237, 243);
+        }
+        .button-group {
+            margin-top: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 1.2rem;
+            text-decoration: none;
+            color: white;
+            background-color: #0056b3;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            color:aqua;
+            background-color:white;
+        }
+        .typewriter-container {
+            font-size: 1rem;
+            font-weight: bold;
+            color:white;
+            border-right: 2px solid #0033cc;
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 5s steps(30, end), blink 0.5s step-end infinite;
+        }
+        @keyframes typing {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        @keyframes blink {
+            from {
+                border-right-color: #0033cc;
+            }
+            to {
+                border-right-color: transparent;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Blog Writer</h1>
+        <div class="typewriter-container" id="typewriter"">
+        <h2>Turning ideas into blogs, one post at a time.</h2>
+        </div>
+        <div class="button-group">
+            <a href="/signup/" class="button">Sign Up</a>
+            <a href="/signin/" class="button">Sign In</a>
+        </div>
+    </div>
+</body>
+</html>
