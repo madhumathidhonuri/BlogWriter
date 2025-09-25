@@ -1,6 +1,6 @@
-# BlogWriters - AI-Powered Blog Platform
+# BlogWriters - AI-Powered Blog Website
 
-BlogWriters is a Django-based blogging platform where users can create, edit, and share blogs. It features text-to-speech, TL;DR summarization, likes, comments, and user authentication.
+BlogWriters is a Django-based blogging website where users can create, edit, and share blogs. It features text-to-speech, TL;DR summarization, likes, comments, and user authentication.
 
 ---
 
