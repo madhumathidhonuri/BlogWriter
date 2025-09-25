@@ -1,109 +1,161 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ blog.title }} - My AI Blog</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body class="bg-light">
+{% extends "base.html" %}
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <div class="container">
-    <a class="navbar-brand" href="{% url 'HomePage' %}">My AI Blog</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        {% if user.is_authenticated %}
-          <li class="nav-item"><a class="nav-link disabled" href="#">Hi, {{ user.username }}</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
-        {% else %}
-          <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
-        {% endif %}
-      </ul>
+{% block title %}{{ blog.title }} - BlogWriters{% endblock %}
+
+{% block content %}
+<div class="card shadow p-4">
+    <!-- Blog Title & Info -->
+    <h1 class="text-dark">{{ blog.title }}</h1>
+    <p class="text-muted">
+        By {{ blog.author.username }} | Reading Time: {{ blog.reading_time }} min
+    </p>
+    <hr>
+
+    <!-- Blog Content -->
+    <div class="card-text mb-4">{{ blog.content|linebreaks }}</div>
+
+    <!-- TL;DR & Text-to-Speech -->
+    <div class="mb-4">
+        <button id="tldr-btn" class="btn btn-warning me-2">Summarize</button>
+        <button id="tts-btn" class="btn btn-info">Listen</button>
+        <div id="tldr-result" class="mt-2"></div>
     </div>
-  </div>
-</nav>
 
-<div class="container my-5">
-    <div class="card shadow p-4">
-        <!-- Blog Title & Info -->
-        <h1 class="card-title">{{ blog.title }}</h1>
-        <p class="text-muted">
-            By {{ blog.author.username }} | Reading Time: {{ blog.reading_time }} min
-        </p>
-        <hr>
+    <!-- Likes -->
+    <div class="mb-3">
+        <button id="like-btn" class="btn btn-outline-danger">
+            <span id="like-icon">{% if user_liked %}❤️{% else %}🤍{% endif %}</span>
+            <span id="like-count">{{ blog.likes.count }}</span>
+        </button>
+    </div>
 
-        <!-- Blog Content -->
-        <div class="card-text mb-4">{{ blog.content|linebreaks }}</div>
+    <!-- Tags -->
+    {% if blog.tags.all %}
+    <p>
+        Tags:
+        {% for tag in blog.tags.all %}
+            <span class="badge bg-secondary">{{ tag.name }}</span>
+        {% endfor %}
+    </p>
+    {% endif %}
 
-        <!-- TL;DR & Text-to-Speech Buttons -->
-        <div class="mb-4">
-            <button id="tldr-btn" class="btn btn-warning me-2">TL;DR</button>
-            <button id="tts-btn" class="btn btn-info">Listen</button>
-            <div id="tldr-result" class="mt-2"></div>
-        </div>
+    <!-- Edit & Delete for author -->
+    {% if user.is_authenticated and blog.author == user %}
+    <div class="mb-3">
+        <a href="{% url 'EditBlog' blog.id %}" class="btn btn-warning me-2">Edit</a>
+        <a href="{% url 'DeleteBlog' blog.id %}" class="btn btn-danger">Delete</a>
+    </div>
+    {% endif %}
 
-        <!-- Tags -->
-        {% if blog.tags.all %}
-        <p>
-            Tags:
-            {% for tag in blog.tags.all %}
-                <span class="badge bg-secondary">{{ tag.name }}</span>
+    <!-- Comments Section -->
+    <div class="mb-3">
+        <h5>Comments</h5>
+        <div id="comments-list">
+            {% for comment in comments %}
+                <p><strong>{{ comment.author.username }}:</strong> {{ comment.content }}</p>
             {% endfor %}
-        </p>
-        {% endif %}
-
-        <!-- Edit & Delete buttons for author -->
-        {% if user.is_authenticated and blog.author == user %}
-        <div class="mb-3">
-            <a href="{% url 'EditBlog' blog.id %}" class="btn btn-warning me-2">Edit</a>
-            <a href="{% url 'DeleteBlog' blog.id %}" class="btn btn-danger">Delete</a>
         </div>
+        {% if user.is_authenticated %}
+            <textarea id="comment-input" class="form-control mb-2" placeholder="Write a comment..."></textarea>
+            <button id="comment-btn" class="btn btn-primary">Post Comment</button>
+        {% else %}
+            <p><a href="{% url 'login' %}">Login</a> to post a comment.</p>
         {% endif %}
+    </div>
 
-        <!-- Recommended Blogs -->
-        <h5 class="mt-4">Recommended for you</h5>
-        <div class="row">
-            {% for related in related_blogs %}
-            <div class="col-md-4 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <a href="{% url 'BlogDetail' related.id %}">{{ related.title }}</a>
-                    </div>
+    <!-- Recommended Blogs -->
+    <h5 class="mt-4">Recommended for you</h5>
+    <div class="row">
+        {% for related in related_blogs %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <a href="{% url 'BlogDetail' related.id %}" class="text-dark text-decoration-none">{{ related.title }}</a>
                 </div>
             </div>
-            {% empty %}
-                <p>No recommendations available.</p>
-            {% endfor %}
         </div>
-
-        <!-- Back to Home -->
-        <a href="{% url 'HomePage' %}" class="btn btn-primary mt-3">Back to Home</a>
+        {% empty %}
+            <p>No recommendations available.</p>
+        {% endfor %}
     </div>
-</div>
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Back to Home -->
+    <a href="{% url 'HomePage' %}" class="btn btn-primary mt-3">Back to Home</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
 <script>
-    // Text-to-Speech
-    document.getElementById('tts-btn').addEventListener('click', () => {
-        const msg = new SpeechSynthesisUtterance(`{{ blog.content|escapejs }}`);
-        window.speechSynthesis.speak(msg);
+    // Text-to-Speech with Pause/Resume
+    const ttsBtn = document.getElementById('tts-btn');
+    let ttsUtterance = null;
+
+    ttsBtn.addEventListener('click', () => {
+        if (!ttsUtterance) {
+            ttsUtterance = new SpeechSynthesisUtterance(`{{ blog.content|escapejs }}`);
+            ttsUtterance.onend = () => {
+                ttsUtterance = null;
+                ttsBtn.innerText = 'Listen';
+            };
+            speechSynthesis.speak(ttsUtterance);
+            ttsBtn.innerText = 'Pause';
+        } else if (speechSynthesis.speaking && !speechSynthesis.paused) {
+            speechSynthesis.pause();
+            ttsBtn.innerText = 'Resume';
+        } else if (speechSynthesis.paused) {
+            speechSynthesis.resume();
+            ttsBtn.innerText = 'Pause';
+        }
     });
 
-    // TL;DR - fetch from backend (Hugging Face)
-    document.getElementById('tldr-btn').addEventListener('click', async () => {
+    // TL;DR
+    const tldrBtn = document.getElementById('tldr-btn');
+    const tldrResult = document.getElementById('tldr-result');
+
+    tldrBtn.addEventListener('click', async () => {
+        tldrBtn.disabled = true;
+        tldrBtn.innerText = 'Summarizing...';
         const response = await fetch("{% url 'blog_tldr' blog.id %}");
         const data = await response.json();
-        document.getElementById('tldr-result').innerText = data.summary;
+        tldrResult.innerText = data.summary;
+        tldrBtn.disabled = false;
+        tldrBtn.innerText = 'Summarize';
     });
-</script>
 
-</body>
-</html>
+    // Likes
+    document.getElementById('like-btn').addEventListener('click', async () => {
+        const response = await fetch("{% url 'toggle_like' blog.id %}", {
+            method: "POST",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+        });
+        const data = await response.json();
+        document.getElementById('like-icon').innerText = data.liked ? '❤️' : '🤍';
+        document.getElementById('like-count').innerText = data.total_likes;
+    });
+
+    // Comments
+    const commentBtn = document.getElementById('comment-btn');
+    if (commentBtn) {
+        commentBtn.addEventListener('click', async () => {
+            const content = document.getElementById('comment-input').value;
+            if (!content.trim()) return;
+
+            const response = await fetch("{% url 'add_comment' blog.id %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({ content })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                const div = document.getElementById('comments-list');
+                div.innerHTML += `<p><strong>${data.author}:</strong> ${data.content}</p>`;
+                document.getElementById('comment-input').value = '';
+            }
+        });
+    }
+</script>
+{% endblock %}

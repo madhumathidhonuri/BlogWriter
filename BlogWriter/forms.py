@@ -15,12 +15,16 @@ class CustomUserCreationForm(UserCreationForm):
         
 
 class BlogPostForm(forms.ModelForm):
+    tags_input = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter tags separated by commas'}),
+        label="Tags"
+    )
+
     class Meta:
         model = BlogPost
-        fields = ['title', 'content', 'tags']
+        fields = ['title', 'content']  # Remove tags field, we’ll handle manually
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
             'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 10}),
-            'tags': forms.SelectMultiple(attrs={'class': 'form-control'}),
         }
-

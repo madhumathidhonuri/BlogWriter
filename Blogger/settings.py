@@ -129,12 +129,7 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# ---------------- MEDIA FILES (if needed) ----------------
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
 
-
-# ---------------- LOGIN / LOGOUT REDIRECT ----------------
 LOGIN_REDIRECT_URL = "HomePage"
 LOGOUT_REDIRECT_URL = "HomePage"
 

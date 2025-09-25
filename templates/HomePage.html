@@ -1,67 +1,21 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlogWriter</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <div class="container">
-    <a class="navbar-brand" href="{% url 'HomePage' %}">BlogWriters</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="{% url 'HomePage' %}">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'CreateEditBlog' %}">Create Blog</a></li>
-        <li class="nav-item"><a class="nav-link" href="/accounts/login/">Login</a></li>
-        <li class="nav-item"><a class="nav-link" href="/accounts/register/">Register</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
+{% extends "base.html" %}
 
+{% block title %}Home - BlogWriters{% endblock %}
 
-<section class="hero-section text-white text-center d-flex align-items-center justify-content-center" 
-         style="height: 400px; background: url('{% static 'BackgroundBlog.png' %}') no-repeat center center; background-size: cover;">
-    <div class="bg-dark bg-opacity-50 p-4 rounded">
-        <h1 class="display-4">AI-Powered Personalized Blogs</h1>
-        <p class="lead">Read smarter. Write smarter. Explore blogs that match your interests.</p>
-    </div>
-</section>
-
-
-<div class="container my-5">
-    <h2 class="mb-4">Latest Blogs</h2>
-    <div class="row">
-        {% for blog in blogs %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">
-                        <a href="{% url 'BlogDetail' blog.id %}" class="text-decoration-none">{{ blog.title }}</a>
-                    </h5>
-                    <p class="card-text">{{ blog.content|slice:":120" }}...</p>
-                </div>
-                <div class="card-footer text-muted">
-                    By {{ blog.author.username }} | {{ blog.reading_time }} min read
-                </div>
+{% block content %}
+<div class="row">
+    {% for blog in blogs %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow">
+            <div class="card-body">
+                <a href="{% url 'BlogDetail' blog.id %}" class="text-dark text-decoration-none">
+                    <h5 class="card-title">{{ blog.title }}</h5>
+                </a>
+                <p class="text-muted">By {{ blog.author.username }} | {{ blog.reading_time }} min read</p>
+                <p class="card-text">{{ blog.content|truncatewords:20 }}</p>
             </div>
         </div>
-        {% empty %}
-        <p>No blogs yet.</p>
-        {% endfor %}
     </div>
+    {% endfor %}
 </div>
-
-
-<footer class="bg-light py-4 text-center">
-    <p class="mb-0">&copy; 2025 My AI Blog. All rights reserved.</p>
-</footer>
-
-</body>
-</html>
+{% endblock %}

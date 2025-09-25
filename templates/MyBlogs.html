@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}My Blogs - BlogWriters{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2>My Blogs</h2>
+    <hr>
+
+    {% for blog in blogs %}
+    <div class="card mb-4 shadow p-3">
+        <h4><a href="{% url 'BlogDetail' blog.id %}">{{ blog.title }}</a></h4>
+        <p class="text-muted">By {{ blog.author.username }} | Reading Time: {{ blog.reading_time }} min</p>
+        <p>{{ blog.content|truncatewords:50 }}</p>
+
+        <!-- Likes -->
+        <p>
+            Likes: {{ blog.likes.count }}
+            {% if blog.user_liked %}
+                ❤️
+            {% else %}
+                🤍
+            {% endif %}
+        </p>
+
+        <!-- Comments -->
+        <p>Comments: {{ blog.comments.count }}</p>
+
+        <!-- Edit/Delete -->
+        <div>
+            <a href="{% url 'EditBlog' blog.id %}" class="btn btn-sm btn-warning me-2">Edit</a>
+            <a href="{% url 'DeleteBlog' blog.id %}" class="btn btn-sm btn-danger">Delete</a>
+        </div>
+    </div>
+    {% empty %}
+    <p>You have not created any blogs yet. Create one now.</p>
+    {% endfor %}
+
+</div>
+{% endblock %}
