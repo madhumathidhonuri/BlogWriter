@@ -20,7 +20,7 @@ BlogWriters is a Django-based blogging website where users can create, edit, and
 ## Tech Stack
 
 - **Backend:** Django (Python)
-- **Frontend:** HTML, CSS, Bootstrap 5
+- **Frontend:** HTML, CSS, Bootstrap, JavaScript
 - **Database:** SQLite 
 - **AI Features:** Hugging Face Transformers (sshleifer/distilbart-cnn-12-6) for blog summarization
 - **Other Libraries:**  
