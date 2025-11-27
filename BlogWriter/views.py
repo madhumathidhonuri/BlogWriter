@@ -10,7 +10,7 @@ from .forms import CustomUserCreationForm, BlogPostForm
 from transformers import pipeline
 import json
 
-summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+summarizer_model = None
 
 def HomePage(request):
     blogs = BlogPost.objects.all().order_by('-created_at')
@@ -108,14 +108,23 @@ def DeleteBlog(request, blog_id):
 
 
 def blog_tldr(request, blog_id):
+    global summarizer_model 
+    
     blog = get_object_or_404(BlogPost, id=blog_id)
+    
     try:
-        summary = summarizer(blog.content, max_length=100, min_length=30, do_sample=False)[0]['summary_text']
-    except:
+        
+        if summarizer_model is None:
+            print("Loading AI Model... (First time only)")
+            summarizer_model = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
+            print("Model Loaded!")
+        summary = summarizer_model(blog.content, max_length=100, min_length=30, do_sample=False)[0]['summary_text']
+    except Exception as e:
+        print(f"Error generating summary: {e}")
         words = blog.content.split()
         summary = " ".join(words[:150]) + ("..." if len(words) > 150 else "")
+        
     return JsonResponse({"summary": summary})
-
 
 @login_required
 def my_blogs(request):
